@@ -1,2 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/learning-432304/imagen3-app', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/learning-432304/imagen3-app']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      [
+        'gcloud', 'run', 'deploy', 'imagen3-app',
+        '--image', 'gcr.io/learning-432304/imagen3-app',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'gcr.io/learning-432304/imagen3-app'
+
 options:
   logging: CLOUD_LOGGING_ONLY
