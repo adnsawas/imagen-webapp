@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const { GoogleAuth } = require('google-auth-library');
 const axios = require('axios');
 
@@ -11,22 +11,34 @@ const PROJECT_ID = 'learning-432304';
 const LOCATION = 'us-central1';
 const MODEL = 'imagen-3';
 const PUBLISHER = 'google';
-const SERVICE_ACCOUNT_PATH = './service_account/images-service-account.json';
+const SECRET_NAME = 'imagen-service-account-key';
 
 // === MIDDLEWARE ===
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public')); // Serves index.html at root
 
+// === FUNCTION TO GET SERVICE ACCOUNT KEY FROM SECRET MANAGER ===
+async function getServiceAccountKey() {
+  const client = new SecretManagerServiceClient();
+  const [version] = await client.accessSecretVersion({
+    name: `projects/${PROJECT_ID}/secrets/${SECRET_NAME}/versions/latest`,
+  });
+  const payload = version.payload.data.toString('utf8');
+  return JSON.parse(payload);
+}
+
 // === ROUTES ===
 app.post('/generate', async (req, res) => {
   const prompt = req.body.prompt;
 
-  const auth = new GoogleAuth({
-    keyFile: SERVICE_ACCOUNT_PATH,
-    scopes: 'https://www.googleapis.com/auth/cloud-platform'
-  });
-
   try {
+    const key = await getServiceAccountKey();
+
+    const auth = new GoogleAuth({
+      credentials: key,
+      scopes: 'https://www.googleapis.com/auth/cloud-platform',
+    });
+
     const client = await auth.getClient();
     const accessToken = await client.getAccessToken();
 
@@ -35,13 +47,13 @@ app.post('/generate', async (req, res) => {
     const response = await axios.post(
       url,
       {
-        instances: [{ prompt }]
+        instances: [{ prompt }],
       },
       {
         headers: {
           Authorization: `Bearer ${accessToken.token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -54,7 +66,6 @@ app.post('/generate', async (req, res) => {
       <br><br>
       <a href="/">Generate Another</a>
     `);
-
   } catch (error) {
     console.error('Error generating image:', error.response?.data || error.message);
     res.status(500).send(`<p>Error generating image. Try again later.</p><a href="/">Go back</a>`);

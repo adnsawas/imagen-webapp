@@ -1,0 +1,57 @@
+# === Node.js Dependencies ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# === Build Artifacts ===
+dist/
+build/
+coverage/
+.tmp/
+.temp/
+.cache/
+
+# === Environment / Secrets ===
+.env
+.env.*             # Handles env variants like .env.production
+*.local
+*.env
+*.json             # Be careful: ignore only specific secret files if needed
+!/package.json     # Allow this one to stay tracked
+
+# === OS-specific ===
+.DS_Store          # macOS
+Thumbs.db          # Windows
+ehthumbs.db        # Windows
+Icon?              # macOS
+
+# === Editor-specific ===
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# === Logs ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# === Secret and Credential Files ===
+service_account/
+*.key.json
+*.pem
+*.p12
+
+# === Test output ===
+junit.xml
+test-output/
+
+# === Misc ===
+*.swp                # vi swap files
+*.bak                # backup files
+*.tmp
