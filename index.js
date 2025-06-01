@@ -21,7 +21,7 @@ app.use(express.static('public')); // Serves index.html at root
 async function getServiceAccountKey() {
   const client = new SecretManagerServiceClient();
   const [version] = await client.accessSecretVersion({
-    name: `projects/${PROJECT_ID}/secrets/${SECRET_NAME}/versions/latest`,
+    name: `projects/805249206835/secrets/${SECRET_NAME}/versions/latest`,
   });
   const payload = version.payload.data.toString('utf8');
   return JSON.parse(payload);
