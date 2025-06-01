@@ -9,7 +9,7 @@ const app = express();
 // === CONFIG ===
 const PROJECT_ID = 'learning-432304';
 const LOCATION = 'us-central1';
-const MODEL = 'imagen-3';
+const MODEL = 'imagen-4.0-generate-preview-05-20';
 const PUBLISHER = 'google';
 const SECRET_NAME = 'imagen-service-account-key';
 
@@ -47,7 +47,7 @@ app.post('/generate', async (req, res) => {
     const response = await axios.post(
       url,
       {
-        instances: [{ prompt }],
+        instances: [{ prompt, image: { width: 768, height: 768 } }],
       },
       {
         headers: {
