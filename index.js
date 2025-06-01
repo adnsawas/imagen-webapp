@@ -47,7 +47,7 @@ app.post('/generate', async (req, res) => {
     const response = await axios.post(
       url,
       {
-        instances: [{ prompt, image: { width: 768, height: 768 } }],
+        instances: [{ prompt }],
       },
       {
         headers: {
